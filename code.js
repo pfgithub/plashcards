@@ -23,6 +23,7 @@ const sel_level_menu = document.getElementById("sel_level");
 const out_div = document.getElementById("out");
 const in_input = document.getElementById("in");
 const out_div_2 = document.getElementById("out2");
+const kbd = document.getElementById("keyboard");
 
 function fancylevelname(index, level) {
     return "" + ("" + (index + 1)).padStart(2, "0") + " - " + level.name;
@@ -228,7 +229,60 @@ document.onkeyup = (k) => {
         sendheld();
     }
 }
-in_input.onblur = () => {current_held = new Set(); current_input = new Set(); updateinput()}
+in_input.onfocus = () => {
+    kbd.classList.toggle("hide", true);
+};
+in_input.onblur = () => {
+    kbd.classList.toggle("hide", false);
+    current_held = new Set(); current_input = new Set(); updateinput();
+}
+let kbd_autocommit = -1;
+function startAutocommit() {
+    cancelAutocommit();
+    kbd_autocommit = setTimeout(() => {
+        kbd_autocommit = -1;
+
+        if(current_input.size > 0) {
+            sendheld();
+            clickvibrate();
+        }
+    }, 200);
+}
+function cancelAutocommit() {
+    if(kbd_autocommit != -1) {
+        clearTimeout(kbd_autocommit);
+        kbd_autocommit = -1;
+    }
+}
+function clickvibrate() {
+    navigator.vibrate(0);
+    navigator.vibrate(1);
+}
+kbd.onclick = e => {
+    /**
+     * @type HTMLElement
+     */
+    let q = e.target;
+    while(!q.hasAttribute("data-key")) {
+        q = q.parentElement;
+        if(q == null) return;
+        if(q === kbd) return;
+    }
+
+    clickvibrate();
+
+    const datakey = q.getAttribute("data-key");
+    if(datakey === "_SEND") {
+        cancelAutocommit();
+        if(current_input.size > 0) {
+            sendheld();
+        }
+    }else{
+        current_input.add(datakey);
+        updateinput();
+        startAutocommit();
+    }
+}
 
 function setconv(set) {
     const res = [..."stkpwhr*AOEU"].filter(itm => set.has(itm)).join("");

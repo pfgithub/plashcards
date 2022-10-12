@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        html {
+            background-color: black;
+            color: white;
+            font-size:16pt;
+            touch-action: none;
+        }
+
         .pcursor {
             position:relative;
         }
@@ -17,7 +24,53 @@
         .pcursor > div:after {
             content:"|";
             color: transparent;
-            border-left:1px solid black;
+            border-left:1px solid #aaa;
+        }
+
+        #keyboard {
+            position: fixed;
+            bottom: 100px;
+            left: 0;
+            width: 100%;
+            background-color: #111;
+            padding: 10px 1px 10px 1px;
+        }
+        #keyboard > div {
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: grid;
+            grid-template-rows: repeat(3, 60px);
+            grid-template-columns: repeat(10, 1fr);
+        }
+        .kb-key {
+            padding: 1px;
+            appearance: none;
+            background-color: transparent;
+            border: 0;
+            font-size: 16pt;
+        }
+        .kb-key > div {
+            width: 100%;
+            height: 100%;
+            display:flex;justify-content:center;align-items:center;
+            border-radius: 4px;
+            background-color: #333;
+            color:white;
+        }
+        .kb-key:active > div {
+            background-color: #888;
+        }
+        input, select {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 2px;
+            border-radius: 4px;
+            font-size: inherit;
+        }
+        .hide {
+            display: none;
         }
     </style>
 </head>
@@ -26,6 +79,37 @@
     <div id="out"></div>
     <input type="text" id="in" />
     <div id="out2"></div>
+
+    <div id="keyboard"><div>
+        <button data-key="s" class="kb-key" style="grid-row:span 2"><div>s</div></button>
+        <button data-key="t" class="kb-key"><div>t</div></button>
+        <button data-key="p" class="kb-key"><div>p</div></button>
+        <button data-key="h" class="kb-key"><div>h</div></button>
+        <button data-key="*" class="kb-key" style="grid-row:span 2"><div>*</div></button>
+        <button data-key="F" class="kb-key"><div>F</div></button>
+        <button data-key="P" class="kb-key"><div>P</div></button>
+        <button data-key="L" class="kb-key"><div>L</div></button>
+        <button data-key="T" class="kb-key"><div>T</div></button>
+        <button data-key="D" class="kb-key"><div>D</div></button>
+
+        <button data-key="k" class="kb-key"><div>k</div></button>
+        <button data-key="w" class="kb-key"><div>w</div></button>
+        <button data-key="r" class="kb-key"><div>r</div></button>
+        <button data-key="R" class="kb-key"><div>R</div></button>
+        <button data-key="B" class="kb-key"><div>B</div></button>
+        <button data-key="G" class="kb-key"><div>G</div></button>
+        <button data-key="S" class="kb-key"><div>S</div></button>
+        <button data-key="Z" class="kb-key"><div>Z</div></button>
+        
+        <button data-key="_SEND" class="kb-key" style="grid-column:span 2"><div>⎵</div></button>
+        <button data-key="A" class="kb-key"><div>A</div></button>
+        <button data-key="O" class="kb-key"><div>O</div></button>
+        <div></div>
+        <button data-key="E" class="kb-key"><div>E</div></button>
+        <button data-key="U" class="kb-key"><div>U</div></button>
+        <div></div>
+        <button data-key="_SEND" class="kb-key" style="grid-column:span 2"><div>⎵</div></button>
+    </div></div>
 
     <script src="code.js"></script>
 </body>
