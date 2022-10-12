@@ -73,27 +73,27 @@ const levels = [
     {
         name: "stkp",
         desc: "learn the s, t, k, and p keys",
-        cb: () => randsel([..."stkp"]),
+        cb: () => new Set([randsel([..."stkp"])]),
     },
     {
         name: "whr",
-        cb: () => randsel([..."whr"]),
+        cb: () => new Set([randsel([..."whr"])]),
     },
     {
         name: "AOEU",
-        cb: () => randsel([..."AOEU"]),
+        cb: () => new Set([randsel([..."AOEU"])]),
     },
     {
         name: "FRPB",
-        cb: () => randsel([..."FRPB"]),
+        cb: () => new Set([randsel([..."FRPB"])]),
     },
     {
         name: "LGTS",
-        cb: () => randsel([..."LGTS"]),
+        cb: () => new Set([randsel([..."LGTS"])]),
     },
     {
         name: "DZ",
-        cb: () => randsel([..."DZ"]),
+        cb: () => new Set([randsel([..."DZ"])]),
     },
 ];
 function clevelWord() {
@@ -114,8 +114,8 @@ let current_goal = [];
 let used_goal = [];
 let cgs = 0;
 function updatephrase() {
-    phraseres1.textContent = used_goal.join(" ") + " ";
-    phraseres2.textContent = current_goal.join(" ");
+    phraseres1.textContent = used_goal.map(setconv).join(" ") + " ";
+    phraseres2.textContent = current_goal.map(setconv).join(" ");
     pcursor.style.display = "none"; pcursor.offsetHeight; pcursor.style.display = "";
     // ^ firefox bug workaround
 }
@@ -124,6 +124,14 @@ function resetlevel() {
     current_goal = clevelPhrase();
     updatephrase();
     cgs = 0;
+}
+
+function seteq(a, b) {
+    return a.size === b.size && [...a].every(itm => b.has(itm));
+}
+function flattenGoalSet(gs) {
+    return gs; // todo; this is where we convert special things
+    // like 'sh' / 'th' / 'n' / … to 'SH' / 'TH' / 'TPH' / …
 }
 
 async function game() {
@@ -137,24 +145,24 @@ async function game() {
                 const clid = currentlevelid();
                 const clevel = levels[clid];
                 // we could analyze ms for each keypress even if we wanted (excl the first)
-                const lcmsg = "level ["+fancylevelname(clid, clevel)+"] in ["+Math.round(diff / (used_goal.length - 1))+"]ms/c phrase ["+used_goal.join(" ")+"]";
+                const lcmsg = "level ["+fancylevelname(clid, clevel)+"] in ["+Math.round(diff / (used_goal.length - 1))+"]ms/c phrase ["+used_goal.map(setconv).join(" ")+"]";
                 localStorage.setItem("--score-"+Date.now(), lcmsg);
                 print(lcmsg);
             }
             resetlevel();
         }
         const tires = await textinput();
-        if(tires === current_goal[0]) {
+        if(seteq(tires, flattenGoalSet(current_goal[0]))) {
             const shres = current_goal.shift();
-            if(shres !== "*") used_goal.push(shres);
+            if(!seteq(shres, new Set(["*"]))) used_goal.push(shres);
             updatephrase();
             if(cgs == 0) cgs = Date.now();
-        }else if(tires === "*") {
+        }else if(seteq(tires, new Set(["*"]))) {
             const ug0 = used_goal.pop();
             if(ug0 != null) current_goal.unshift(ug0);
             updatephrase();
         }else{
-            current_goal.unshift("*");
+            current_goal.unshift(new Set(["*"]));
             updatephrase();
         }
     }
@@ -198,6 +206,12 @@ function kconv(key) {
     }[key];
 }
 
+// we need a one at a time mode
+// on android, every key is 'Process' - you need to listen to the IME events
+// or BeforeInput or whatever
+
+// alternatively, we display our own virtual keyboard
+
 let current_held = new Set();
 let current_input = new Set();
 in_input.onkeydown = (k) => {
@@ -217,19 +231,19 @@ document.onkeyup = (k) => {
 in_input.onblur = () => {current_held = new Set(); current_input = new Set(); updateinput()}
 
 function setconv(set) {
-    const order = "stkpwhr*AOEUFRPBLGTSDZ";
-    const res = [...order].map(itm => set.has(itm) ? itm : "");
-    return res.join("");
+    const res = [..."stkpwhr*AOEU"].filter(itm => set.has(itm)).join("");
+    const rhsres = [..."FRPBLGTSDZ"].filter(itm => set.has(itm)).join("");
+    return (res !== "" ? res + rhsres : rhsres !== "" ? "-" + rhsres : "");
 }
 
 function updateinput() {
     in_input.value = "["+current_held.size+"] " + setconv(current_input);
 }
 function sendheld() {
-    const msg = setconv(current_input);
+    const cin_set = current_input;
     current_input = new Set();
     updateinput();
-    sendtext(msg);
+    sendtext(cin_set);
 }
 function print(msg) {
     const divel = document.createElement("div");
