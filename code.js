@@ -258,7 +258,7 @@ function clickvibrate() {
     navigator.vibrate(0);
     navigator.vibrate(1);
 }
-kbd.onclick = e => {
+kbd.onpointerdown = e => {
     /**
      * @type HTMLElement
      */
