@@ -279,14 +279,18 @@ kbd.onpointerdown = e => {
 
     const datakey = q.getAttribute("data-key");
     if(datakey === "_SEND") {
-        cancelAutocommit();
+        //cancelAutocommit();
         if(current_input.size > 0) {
             sendheld();
         }
     }else{
-        current_input.add(datakey);
-        updateinput();
-        startAutocommit();
+        if(current_input.has(datakey)) {
+            sendheld();
+        }else{
+            current_input.add(datakey);
+            updateinput();
+        }
+        //startAutocommit();
     }
 }
 
