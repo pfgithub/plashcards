@@ -105,11 +105,7 @@ const levels = [
 function clevelWord() {
     let clevel = currentlevelid();
     if(levels[clevel].fillmode !== false) while(clevel > 0) {
-        if(levels[clevel].fillmode === false) {
-            clevel -= 1;
-            break;
-        }
-        if(Math.random() < 0.5) {
+        if(levels[clevel].fillmode === false || Math.random() < 0.5) {
             clevel -= 1;
         }else break;
     }
