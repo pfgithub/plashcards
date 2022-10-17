@@ -89,6 +89,11 @@ const levels = [
         cb: () => new Set([randsel([..."FRPB"])]),
     },
     {
+        name: "eqprogress fillmode=0",
+        fillmode: false,
+        cb: () => new Set([randsel([..."stkpwhrAOEUFRPB"])]),
+    },
+    {
         name: "LGTS",
         cb: () => new Set([randsel([..."LGTS"])]),
     },
@@ -99,7 +104,8 @@ const levels = [
 ];
 function clevelWord() {
     let clevel = currentlevelid();
-    while(clevel > 0) {
+    if(levels[clevel].fillmode !== false) while(clevel > 0) {
+        if(levels[clevel].fillmode === false) continue;
         if(Math.random() < 0.5) {
             clevel -= 1;
         }else break;
