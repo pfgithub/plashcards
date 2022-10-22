@@ -329,9 +329,12 @@ kbd.onpointerdown = e => {
 }
 
 function setconv(set) {
-    const res = [..."sʃzvjtþndfgkčypbmwhlr*AOEU"].filter(itm => set.has(itm)).join("");
-    const rhsres = [..."FRPBLGTSDZ"].filter(itm => set.has(itm)).join("");
-    return (res !== "" ? res + rhsres : rhsres !== "" ? "-" + rhsres : "");
+    const setcpy = new Set(set);
+    const res = [..."sʃzvjtþndfgkčypbmwhlrAOEU*"].filter(itm => setcpy.delete(itm)).join("");
+    const rhsres = [..."FRPBLGTSDZ"].filter(itm => setcpy.delete(itm)).join("");
+    return (res !== "" ? res + rhsres : rhsres !== "" ? "-" + rhsres : "") + (setcpy.size > 0 ? (
+        "ERROR:"+[...setcpy].join(",")
+    ) : "");
 }
 
 function updateinput() {
