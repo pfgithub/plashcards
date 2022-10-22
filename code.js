@@ -63,9 +63,6 @@ v: aoeu, aw, ā, ī, ea, oo, oa, ē, ew, ow, ō, oi, i
 h2: fpltdrbgsz, v, s2(=f), ing, th, lk, mp, nk, ng, ch, n, m, lch, lj, rch, nch, j, sh, rv, kshun, k, shun
 */
 
-function expandword(word) {
-    // 'I' => 'EU'
-}
 function randsel(arr) {
     return arr[Math.random() * arr.length |0];
 }
@@ -94,14 +91,47 @@ const levels = [
         cb: () => new Set([randsel([..."stkpwhrAOEUFRPB"])]),
     },
     {
-        name: "LGTS",
-        cb: () => new Set([randsel([..."LGTS"])]),
+        name: "LGTSDZ",
+        cb: () => new Set([randsel([..."LGTSDZ"])]),
     },
     {
-        name: "DZ",
-        cb: () => new Set([randsel([..."DZ"])]),
+        name: "ʃ,þ,n,d",
+        // ʃ pronounced "sh"
+        // þ pronounced "th" (voiced or unvoiced)
+        cb: () => new Set([randsel(["ʃ", "þ", "n", "d"])]),
+    },
+    {
+        name: "f,b,m,l",
+        cb: () => new Set([randsel(["f", "b", "m", "l"])]),
+    },
+    {
+        name: "g,č,v,z",
+        // č pronounced "ch"
+        cb: () => new Set([randsel(["g", "č", "v", "z"])]),
+    },
+    {
+        name: "j,y",
+        cb: () => new Set([randsel(["j", "y"])]),
     },
 ];
+const expand_syms = new Map(Object.entries({
+    'ʃ': ["s", "h"],
+    'þ': ["t", "h"],
+    'n': ["t", "p", "h"],
+    'd': ["t", "k"],
+
+    'f': ["t", "p"],
+    'b': ["p", "w"],
+    'm': ["p", "h"],
+    'l': ["h", "r"],
+
+    'g': ["t", "p", "k", "w"],
+    'č': ["k", "h"], // ch
+    'v': ["s", "r"],
+    'z': ["s", "*"],
+    'j': ["s", "k", "w", "r"],
+    'y': ["k", "w", "r"],
+}));
 function clevelWord() {
     let clevel = currentlevelid();
     if(levels[clevel].fillmode !== false) while(clevel > 0) {
@@ -136,8 +166,13 @@ function seteq(a, b) {
     return a.size === b.size && [...a].every(itm => b.has(itm));
 }
 function flattenGoalSet(gs) {
-    return gs; // todo; this is where we convert special things
-    // like 'sh' / 'th' / 'n' / … to 'SH' / 'TH' / 'TPH' / …
+    const sa = [...gs].flatMap(c => {
+        const v = expand_syms.get(c);
+        if(v != null) return v;
+        return [c];
+    });
+    console.log("INSET", gs, "OUTSET", sa);
+    return new Set(sa);
 }
 
 async function game() {
@@ -294,7 +329,7 @@ kbd.onpointerdown = e => {
 }
 
 function setconv(set) {
-    const res = [..."stkpwhr*AOEU"].filter(itm => set.has(itm)).join("");
+    const res = [..."sʃzvjtþndfgkčypbmwhlr*AOEU"].filter(itm => set.has(itm)).join("");
     const rhsres = [..."FRPBLGTSDZ"].filter(itm => set.has(itm)).join("");
     return (res !== "" ? res + rhsres : rhsres !== "" ? "-" + rhsres : "");
 }
