@@ -49,6 +49,7 @@ html {
     border-radius: 4px;
     background-color: #333;
     color:white;
+    color: transparent;
 }
 .kb-key:active > div {
     background-color: #888;
