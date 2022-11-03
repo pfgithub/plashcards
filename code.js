@@ -105,13 +105,9 @@ const levels = [
         cb: () => new Set([randsel(["f", "b", "m", "l"])]),
     },
     {
-        name: "g,č,v,z",
+        name: "g,č,v,z,j,y",
         // č pronounced "ch"
-        cb: () => new Set([randsel(["g", "č", "v", "z"])]),
-    },
-    {
-        name: "j,y",
-        cb: () => new Set([randsel(["j", "y"])]),
+        cb: () => new Set([randsel(["g", "č", "v", "z", "j", "y"])]),
     },
 ];
 const expand_syms = new Map(Object.entries({
