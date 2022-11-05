@@ -145,6 +145,7 @@ function clevelPhrase() {
 let current_goal = [];
 let used_goal = [];
 let cgs = 0;
+let cls = 0;
 function updatephrase() {
     phraseres1.textContent = used_goal.map(setconv).join(" ") + " ";
     phraseres2.textContent = current_goal.map(setconv).join(" ");
@@ -156,6 +157,7 @@ function resetlevel() {
     current_goal = clevelPhrase();
     updatephrase();
     cgs = 0;
+    cls = 0;
 }
 
 function seteq(a, b) {
@@ -194,6 +196,17 @@ async function game() {
             if(!seteq(shres, new Set(["*"]))) used_goal.push(shres);
             updatephrase();
             if(cgs == 0) cgs = Date.now();
+            if(cls === 0) cls = Date.now();
+            else {
+                // * we can use this data to figure out what you're bad at
+                // and recommend those letters more often
+                const now = Date.now();
+                localStorage.setItem("--letter-"+now, JSON.stringify({
+                    set: [...shres],
+                    time: now - cls,
+                }));
+                cls = now;
+            }
         }else if(seteq(tires, new Set(["*"]))) {
             const ug0 = used_goal.pop();
             if(ug0 != null) current_goal.unshift(ug0);
