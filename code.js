@@ -109,6 +109,18 @@ const levels = [
         // č pronounced "ch"
         cb: () => new Set([randsel(["g", "č", "v", "z", "j", "y"])]),
     },
+    {
+        name: "ɔ ī ū ō",
+        cb: () => new Set([randsel(["ɔ", "ī", "ū", "ō"])]),
+    },
+    {
+        name: "I ā æ ē",
+        cb: () => new Set([randsel(["I", "ā", "æ", "ē"])]),
+    },
+    {
+        name: "ຍ ʊ ɔɪ",
+        cb: () => new Set([randsel(["ຍ", "ʊ", "ɔɪ"])]),
+    },
 ];
 const expand_syms = new Map(Object.entries({
     'ʃ': ["s", "h"],
@@ -127,6 +139,21 @@ const expand_syms = new Map(Object.entries({
     'z': ["s", "*"],
     'j': ["s", "k", "w", "r"],
     'y': ["k", "w", "r"],
+
+    // all these symbols are bad. this is misuse of ipa characters.
+    'ɔ': ["A", "U"], // "aw" as in "awesome"
+    'ī': ["A", "O", "E", "U"], // "i" as in "bike" (bīK)
+    'ū': ["A", "O"], // 'oo'/'oa' as in 'booth' or 'look'
+    'ā': ["A", "E"], // 'ā' as in 'ate'
+    'æ': ["A", "E"], // 'ea' as in 'tear' ("tæR")
+    'ē': ["A", "O", "E"], //  'ē' as in
+    'ຍ': ["A", "O", "U"], // 'lao letter nyo' yeah sure why not. 'ew' as in 'jew' (ʤu) this is not very phonetic is it
+
+    'ō': ["O", "E"], // as in 'soap' ('sōP') / 'owned'
+    'ʊ': ["O", "U"], // 'ow' as in 'tower' // ˈtaʊə
+    'ɔɪ': ["O", "E", "U"], // 'oi' as in 'buoyant' (bɔɪənt)
+
+    'I': ["E", "U"],
 }));
 function clevelWord() {
     let clevel = currentlevelid();
@@ -339,7 +366,13 @@ kbd.onpointerdown = e => {
 
 function setconv(set) {
     const setcpy = new Set(set);
-    const res = [..."sʃzvjtþndfgkčypbmwhlrAOEU*"].filter(itm => setcpy.delete(itm)).join("");
+    const res = [
+        ..."sʃzvjtþndfgkčypbmwhlr",
+        "A", "ɔ", "ī", "ū", "ā", "æ", "ē", "ຍ",
+        "O", "ō", "ʊ", "ɔɪ",
+        "E", "I",
+        "U",
+        "*"].filter(itm => setcpy.delete(itm)).join("");
     const rhsres = [..."FRPBLGTSDZ"].filter(itm => setcpy.delete(itm)).join("");
     return (res !== "" ? res + rhsres : rhsres !== "" ? "-" + rhsres : "") + (setcpy.size > 0 ? (
         "ERROR:"+[...setcpy].join(",")
